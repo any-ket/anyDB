@@ -31,7 +31,7 @@ ACTION="$1";
 shift;
 
 if [[ $ACTION == "b" ]] ; then
-  build $@; shift;
+  build $@ && exit 0;
 elif [[ $ACTION == "r" ]] ; then
   run $@
 elif [[ $ACTION == "br" ]] ; then
