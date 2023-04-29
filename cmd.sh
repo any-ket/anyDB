@@ -14,20 +14,16 @@ build(){
 	echo "building target....." && make
 }
 
-runCli(){
-	bin/cli
-}
-
-runServer(){
-	bin/server
+run(){
+	app=$1; shift;
+  [[ ! -z "$app" ]] && [[ -f "$PROJ_BIN_PATH/$app" ]] && $PROJ_BIN_PATH/$app $@
 }
 
 help(){
   echo "Usage:"
-  echo "  b       - build"
-  echo "  cli     - run cli"
-  echo "  server  - run server"
-  echo "  c       - clean all"
+  echo "  b - build"
+  echo "  r - run [target]"
+  echo "  c - clean all"
 }
 
 ACTION="$1";
@@ -36,10 +32,11 @@ shift;
 
 if [[ $ACTION == "b" ]] ; then
   build $@; shift;
-elif [[ $ACTION == "cli" ]] ; then
-  runCli $@
-elif [[ $ACTION == "server" ]] ; then
-  runServer $@
+elif [[ $ACTION == "r" ]] ; then
+  run $@
+elif [[ $ACTION == "br" ]] ; then
+  build;
+  run $@; shift;
 elif [[ $ACTION == "cb" ]] ; then
   rm -rf $PROJ_BUILD_PATH
   rm -rf $PROJ_BIN_PATH
