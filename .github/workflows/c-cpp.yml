@@ -16,4 +16,4 @@ jobs:
     - name: build
       run: ./cmd.sh b
     - name: make run
-      run: ./cmd.sh r server
+      run: ./cmd.sh r cli
