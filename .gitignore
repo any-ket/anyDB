@@ -1,5 +1,6 @@
 #Build Folder
 /build
+/bin
 
 #cache
 CMakeCache.txt
