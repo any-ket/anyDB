@@ -3,7 +3,8 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#define PORT 9090
+#include "tcp.h"
+#define PORT 8088
 #define DB_PATH "db_file"
 
 #define CREATE_TABLE_COMMAND 1
@@ -37,8 +38,8 @@ void createTable(){
 }
 
 int main(){
+  TcpServer server(PORT);
   cout<<"Started DB server listening on port: "<<PORT<<endl;
-  //TODO: implement TCP connection with clients to handle requests, for now taking commands as input to server itself
 
   while(true){
     string command;
