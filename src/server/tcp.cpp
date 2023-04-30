@@ -10,7 +10,7 @@
 #define SA struct sockaddr
 #define MAX 25
 
-TcpServer::TcpServer(int port){
+TcpServer::TcpServer(int port, Callback msgCallback){
   // socket create and verification
   sockId = socket(AF_INET, SOCK_STREAM, 0);
   if (sockId == -1) {
@@ -36,24 +36,20 @@ TcpServer::TcpServer(int port){
     exit(EXIT_FAILURE);
   }
 
-  //have a thread running just to accept incoming client connections
-  std::thread connectionThread([this](){
-    while(true){
-      TcpConnection connection;
-      socklen_t cliAddrLen = sizeof(connection.cliAddr);
-      int connId = accept(sockId, (SA*)&connection.cliAddr, (socklen_t*)&(cliAddrLen));
-      if (connId < 0) {
-       printf("server accept failed...\n");
-       exit(0);
-      }
+  printf("Server Listening on port....%d\n", port);
 
-      connection.init(connId);
-
-      //TODO: use mutex to avoid race condition since connections is being shared by multiple threads
-      this->connections.emplace_back(connection);
+  while(true){
+    TcpConnection connection(msgCallback);
+    socklen_t cliAddrLen = sizeof(connection.cliAddr);
+    int connId = accept(sockId, (SA*)&connection.cliAddr, (socklen_t*)&(cliAddrLen));
+    if (connId < 0) {
+     printf("server accept failed...\n");
+     exit(0);
     }
-  });
-  connectionThread.detach();
+
+    connection.init(connId);
+    connections.push_back(connection);
+  }
 }
 
 void TcpConnection::init(int connId){
@@ -76,8 +72,7 @@ void TcpConnection::init(int connId){
         break;
       }
 
-      printf("Client sent %s\n", buff);
-
+      msgCallback(buff);
       // if msg contains "exit" then disconnect the client
       if (strncmp("exit", buff, 4) == 0) {
         printf("client disconnected...\n");
