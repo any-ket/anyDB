@@ -1,6 +1,6 @@
 #include <cstdlib>
 #include <netinet/in.h>
-#include <sys/_types/_socklen_t.h>
+#include <sys/socket.h>
 #include <thread>
 #include <arpa/inet.h>
 #include "tcp.h"
