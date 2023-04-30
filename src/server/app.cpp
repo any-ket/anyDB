@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include "tcp.h"
-#define PORT 8088
+#include "../common.h"
 #define DB_PATH "db_file"
 
 #define CREATE_TABLE_COMMAND 1
@@ -38,8 +38,8 @@ void createTable(){
 }
 
 int main(){
-  TcpServer server(PORT);
-  cout<<"Started DB server listening on port: "<<PORT<<endl;
+  TcpServer server(SERVER_PORT);
+  cout<<"Started DB server listening on port: "<<SERVER_PORT<<endl;
 
   while(true){
     string command;
