@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <cstring>
 #include <cstdio>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -17,7 +18,7 @@ TcpServer::TcpServer(int port){
     exit(EXIT_FAILURE);
   }
 
-  bzero(&servaddr, sizeof(servaddr));
+  memset(&servaddr, 0, sizeof(servaddr));
 
   servaddr.sin_family = AF_INET;
   servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
