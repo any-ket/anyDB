@@ -8,7 +8,23 @@
 #include <iostream>
 #include "../common.h"
 
+#define CREATE_TABLE_COMMAND 1
+
 using namespace std;
+
+int parseCommand(string str_command){
+  if(str_command=="create table")
+    return CREATE_TABLE_COMMAND;
+  return 0;
+}
+
+int sendToServer(int sockId, char* buff){
+  if (write(sockId, buff, sizeof(buff)) < 0) {
+    std::cerr << "Failed to send data" << std::endl;
+    return 1;
+  }
+  return 0;
+}
 
 int main(){
   //connect to server
@@ -35,6 +51,28 @@ int main(){
   if (connect(sockId, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
     std::cerr << "Connection failed" << std::endl;
     return 1;
+  }
+
+  while(true){
+    string command;
+    getline(cin, command);
+    int com = parseCommand(command);
+    if(!com){
+      cout<<"Invalid command!"<<endl;
+      continue;
+    }
+
+    CLI_REQ req = {
+      .opcode = com
+    };
+
+    switch(com){
+      case 1:
+        sendToServer(sockId, (char*)&req);
+        break;
+      default:
+        break;
+    }
   }
 
 	return EXIT_SUCCESS;
