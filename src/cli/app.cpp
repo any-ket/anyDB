@@ -1,4 +1,6 @@
 #include <iostream>
+#include <_types/_uint16_t.h>
+#include <_types/_uint8_t.h>x
 #include <cstring>
 #include <unistd.h>
 #include <arpa/inet.h>
@@ -12,14 +14,29 @@
 
 using namespace std;
 
-int parseCommand(string str_command){
-  if(str_command=="create table")
+int parseCommand(string str_command, char*& payload, uint16_t& length){
+  if(str_command=="create table"){
+    string name;
+    cout<<"Enter table name"<<endl;
+    cin>>name;
+
+    length = static_cast<uint16_t>(sizeof(CreateTableReq) + name.size());
+
+    cout<<(sizeof(CreateTableReq) + name.size())<<" "<<length<<". length"<<endl;
+    CreateTableReq* req = reinterpret_cast<CreateTableReq*>(new char[length]);
+
+    strcpy(req->tableName, name.c_str());
+
+    payload = (char*)req;
+
     return CREATE_TABLE_COMMAND;
+  }
   return 0;
 }
 
-int sendToServer(int sockId, char* buff){
-  if (write(sockId, buff, sizeof(buff)) < 0) {
+
+int sendToServer(int sockId, char* buff, uint16_t bufLen){
+  if (write(sockId, buff, bufLen) < 0) {
     std::cerr << "Failed to send data" << std::endl;
     return 1;
   }
@@ -56,23 +73,30 @@ int main(){
   while(true){
     string command;
     getline(cin, command);
-    int com = parseCommand(command);
+    char * payload;
+    uint16_t length = 0;
+    uint8_t com = parseCommand(command, payload, length);
     if(!com){
       cout<<"Invalid command!"<<endl;
       continue;
     }
 
-    CLI_REQ req = {
-      .opcode = com
-    };
+    uint16_t reqLen = sizeof(ClientRequest) + length;
+    ClientRequest* req = reinterpret_cast<ClientRequest*>(new char[reqLen]);;
+
+    req->opcode = com;
+    memcpy(&req->data, payload, length);
 
     switch(com){
       case 1:
-        sendToServer(sockId, (char*)&req);
+        sendToServer(sockId, (char*)req, reqLen);
         break;
       default:
         break;
     }
+
+    delete req;
+    delete payload;
   }
 
 	return EXIT_SUCCESS;
