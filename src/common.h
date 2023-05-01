@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <_types/_uint8_t.h>
+#include <cstdint>
 #include <string>
 #include <ctype.h>
 #include <cctype>
