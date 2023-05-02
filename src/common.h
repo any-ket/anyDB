@@ -9,6 +9,7 @@
 #define SERVER_PORT 8081
 
 typedef struct {
+  uint8_t length;
   char tableName[];
 } CreateTableReq;
 

@@ -27,7 +27,6 @@ void createTable(CreateTableReq* tableData){
 int main(){
   TcpServer server(SERVER_PORT, [](char* buff){
     ClientRequest* req = reinterpret_cast<ClientRequest*>(buff);
-    cout<<req->opcode<<"opcode"<<endl;
     switch(req->opcode){
       case 1:{
         CreateTableReq* tableData = reinterpret_cast<CreateTableReq*>(req->data);

@@ -20,8 +20,8 @@ int parseCommand(string str_command, char*& payload, uint16_t& length){
 
     length = static_cast<uint16_t>(sizeof(CreateTableReq) + name.size());
 
-    cout<<(sizeof(CreateTableReq) + name.size())<<" "<<length<<". length"<<endl;
     CreateTableReq* req = reinterpret_cast<CreateTableReq*>(new char[length]);
+    req->length = static_cast<uint8_t>(name.size());
 
     strcpy(req->tableName, name.c_str());
 
