@@ -5,39 +5,38 @@
 #include <string>
 #include "tcp.h"
 #include "../common.h"
+#include <iomanip>
 
 #define DB_PATH "db_file"
-
-typedef struct {
-  std::string name;
-} table;
 
 using namespace std;
 
 
-void createTable(){
-  cout<<"Enter Table Name: "<<endl;
-  table newTable;
-  cin>>newTable.name;
-
+void createTable(CreateTableReq* tableData){
   std::ofstream file(DB_PATH);
   if (file.is_open()) {
-    file.write(reinterpret_cast<const char*>(&newTable), sizeof(table));
+    file.write(reinterpret_cast<const char*>(tableData), sizeof(CreateTableReq));
 
     file.close();
   } else {
     std::cerr << "Unable to open the file." << std::endl;
   }
-  cout<<"Created table "<<newTable.name<<endl;
+  cout<<"Created table "<<tableData->tableName<<endl;
 }
 
 int main(){
   TcpServer server(SERVER_PORT, [](char* buff){
-    CLI_REQ* req = (CLI_REQ*)buff;
+    ClientRequest* req = reinterpret_cast<ClientRequest*>(buff);
     switch(req->opcode){
-      case 1:
-        createTable();
+      case 1:{
+        CreateTableReq* tableData = reinterpret_cast<CreateTableReq*>(req->data);
+        if (tableData != nullptr) {
+          createTable(tableData);
+        } else {
+          std::cerr << "Invalid CreateTableReq data." << std::endl;
+        }
         break;
+      }
       default:
         break;
     }
