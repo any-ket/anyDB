@@ -41,7 +41,8 @@ int sendToServer(int sockId, char* buff, uint16_t bufLen){
   return 0;
 }
 
-int main(){
+int main(int argc, char** argv){
+  int port = atoi(argv[1]) ? atoi(argv[1]) : SERVER_PORT;
   //connect to server
   int sockId = socket(AF_INET, SOCK_STREAM, 0);
   if (sockId == -1) {
@@ -54,7 +55,7 @@ int main(){
 
   struct sockaddr_in serverAddr = {
     .sin_family = AF_INET, //AF_INET is family used for ipv4
-    .sin_port = htons(SERVER_PORT) //htons -> host to network converstion(Endianness convertion)
+    .sin_port = htons(port) //htons -> host to network converstion(Endianness convertion)
   };
 
   if (inet_pton(AF_INET, serverIP.c_str(), &(serverAddr.sin_addr)) <= 0) {
@@ -83,7 +84,10 @@ int main(){
     ClientRequest* req = reinterpret_cast<ClientRequest*>(new char[reqLen]);;
 
     req->opcode = com;
+    req->length = length;
     memcpy(&req->data, payload, length);
+
+    hexdump(req, reqLen);
 
     switch(com){
       case 1:
