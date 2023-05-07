@@ -15,6 +15,7 @@ typedef struct {
 
 typedef struct {
   uint8_t opcode;
+  uint8_t length;
   char data[];
 } ClientRequest;
 

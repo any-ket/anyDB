@@ -1,7 +1,8 @@
+#include <mutex>
 #include <vector>
 #include <netinet/in.h>
 
-using Callback = void (*)(char*);
+#define Callback std::function<void(char*)>
 
 class TcpConnection {
   private:
